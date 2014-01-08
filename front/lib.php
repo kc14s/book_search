@@ -54,7 +54,7 @@ function html_to_text($html) {
 	$html = str_replace('&nbsp;', '', $html);
 	$html = preg_replace('/<.+?>/', '', $html);
 	$html = preg_replace('/&.+?;/', '', $html);
-	return $html;
+	return trim($html);
 }
 
 function get_category_nav() {

@@ -10,37 +10,41 @@ list($book_title, $author, $category, $intro, $status, $tieba_follower) = execut
 $category = $categories[$category];
 $status = $statuses[$status];
 $_POST['title'] = $book_title;
+$result = mysql_query("select source_id, count(*) as c from chapter where book_id = $book_id group by source_id order by c desc");
+$sources = array();
+while (list($s_id, $count) = mysql_fetch_array($result)) {
+	$sources[] = $s_id;
+}
 $html = "<div class=\"page-header\" align=\"center\"><h1>$book_title <small>作者：$author</small></h1></div>";
-$html .= "<div class=\"well\" align=\"center\"><strong>类型</strong>：$category &nbsp; <strong>推荐</strong>：$tieba_follower &nbsp; <strong>状态</strong>：$status";
+$html .= '<div><ul class="nav nav-pills"><li class="dropdown"><a id="dLabel" role="button" data-toggle="dropdown" data-target="#" href="/page.html">来源<span class="caret"></span></a><ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">';
+foreach ($sources as $source) {
+	$html .= '<li role="presentation"><a role="menuitem" tabindex="-1" href="book.php?id='.$book_id.'&source='.$source.'">'.$g_sources[$source].'</a></li>';
+}
+$html .= '</ul></li></ul></div>';
+$html .= "<div class=\"well\" align=\"center\"><strong>类型</strong>：$category &nbsp; <strong>推荐</strong>：$tieba_follower &nbsp; <strong>状态</strong>：$status &nbsp; ";
 $html .= '<div class="row"><div class="col-md-8 col-md-offset-2" align="left">'.format_intro($intro).'</div></div>';
 $html .= "</div>";
-$result = mysql_query("select id, title from chapter where book_id = $book_id order by id");
+$current_source = isset($_GET['source']) ? $_GET['source'] : $sources[0];
+$result = mysql_query("select id, title, url, source_id from chapter where book_id = $book_id and source_id = '$current_source' order by id");
 $col = 0;
 $html .= '<table class="table table-striped">';
-while($row = mysql_fetch_array($result)) {
-	$chapter_id = $row['id'];
-	$chapter_title = $row['title'];
+while(list($chapter_id, $chapter_title, $url, $source_id) = mysql_fetch_array($result)) {
 	if ($col % 3 == 0) {
 		$html .= '<tr>';
 	}
 	$html .= '<td>';
 	$link_id = 0;
-	$query = mysql_query("select source_id, url from link where chapter_id = $chapter_id");
-	while ($record = mysql_fetch_array($query)) {
-		$source_id = $record['source_id'];
-		$url = $record['url'];
-		if (isset($baidu_transcode[$source_id])) {}
-		else {
-			$url = "http://gate.baidu.com/tc?from=opentc&src=$url";
-		}
-		if ($link_id == 0) {
-			$html .= "<a href=\"$url\" target=\"_blank\">$chapter_title</a> &nbsp; &nbsp;";
-		}
-		else {
-			$html .= " <small><a href=\"$url\" target=\"_blank\">镜像$link_id</a></small>";
-		}
-		++$link_id;
+	if (isset($baidu_transcode[$source_id])) {}
+	else {
+		$url = "http://gate.baidu.com/tc?from=opentc&src=$url";
 	}
+	if ($link_id == 0) {
+		$html .= "<a href=\"$url\" target=\"_blank\">$chapter_title</a> &nbsp; &nbsp;";
+	}
+	else {
+		$html .= " <small><a href=\"$url\" target=\"_blank\">镜像$link_id</a></small>";
+	}
+	++$link_id;
 	$html .= '</td>';
 	if ($col % 3 == 2) {
 		$html .= '</tr>';

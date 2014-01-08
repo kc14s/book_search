@@ -15,7 +15,7 @@ foreach my $category (1...10) {
 		wlog("$1 $2 $3");
 		$books{"$2 $3"} = [$1, $2, $3] if (!defined($books{"$2 $3"}));
 	}
-	last;	#debug
+#	last;	#debug
 }
 
 foreach my $book (values %books) {

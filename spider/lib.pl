@@ -44,7 +44,7 @@ sub save_to_db {
 		$db_conn->do("insert into book(title, author, source_id, status, intro) values($title, $author, '$source_id', $status, $intro)");
 	}
 	else {
-		if ($source_id ne 'lyzw') {
+		if ($source_id ne 'lyzw' || $source_id ne 'jamw') {
 			$db_conn->do("update book set status = $status where title = $title and author = $author");
 		}
 	}
@@ -52,15 +52,9 @@ sub save_to_db {
 	foreach my $pa (@$chapters) {
 		my ($chapter_url, $chapter_title) = @$pa;
 		$chapter_title = $db_conn->quote($chapter_title);
-		my $normalized_chapter_title = $chapter_title;
-		$normalized_chapter_title =~ s/\s//g;
-		my $chapter_id = execute_scalar("select id from chapter where book_id = $book_id and normalized_chapter_title = $normalized_chapter_title", $db_conn);
+		my $chapter_id = execute_scalar("select id from chapter where book_id = $book_id and title = $chapter_title and source_id = '$source_id'", $db_conn);
 		if (!defined($chapter_id)) {
-			$db_conn->do("insert into chapter(book_id, title, source_id, normalized_chapter_title) values($book_id, $chapter_title, '$source_id', $normalized_chapter_title)");
-			$chapter_id = execute_scalar("select id from chapter where book_id = $book_id and normalized_chapter_title = $normalized_chapter_title", $db_conn);
-		}
-		if (execute_scalar("select count(*) from link where chapter_id = $chapter_id and source_id = '$source_id'", $db_conn) == 0) {
-			$db_conn->do("insert into link(chapter_id, url, source_id) values($chapter_id, '$chapter_url', '$source_id')");
+			$db_conn->do("insert into chapter(book_id, title, source_id, url) values($book_id, $chapter_title, '$source_id', '$chapter_url')");
 		}
 	}
 }

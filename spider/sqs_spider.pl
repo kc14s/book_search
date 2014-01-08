@@ -37,6 +37,7 @@ foreach my $book (values %books) {
 	my $book_html = fetch_url($book_url, $spider_name);
 	$book_html = gbk_to_utf8($book_html);
 	my $status = 0;
+	$title = $1 if ($book_html =~ /<h1>([^<]+?)<span class="zuixin">/);
 	my $intro = $1 if ($book_html =~ /简介：<\/b><br \/>\s*([\d\D]*?)\s*<\/div>/);
 	wlog($intro);
 	while ($book_html =~ /<a href="(\d+.html)">([^"]+?)<\/a>/g) {

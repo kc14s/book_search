@@ -32,7 +32,7 @@ for (my $page = 1; $page < $end_page; ++$page) {
 		wlog("$url $title $author $status");
 		$books{"$url $title"} = [$url, $title, $author, $status] if (!defined($books{"$url $title"}));
 	}
-	last;	#debug
+#	last;	#debug
 }
 
 foreach my $book (values %books) {
