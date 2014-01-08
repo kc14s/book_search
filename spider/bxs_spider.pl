@@ -2,6 +2,7 @@
 use strict;
 require('config.pl');
 require('lib.pl');
+require('data.pl');
 
 my $spider_name = 'bxs';
 my $db_conn = conn_db();
@@ -22,7 +23,7 @@ for (my $page = 1; $page < $end_page; ++$page) {
 			$url = "http://www.bxs.cc$1";
 			$title = $2;
 		}
-		$author = $1 if ($arr =~ /<div class="intro"><span>作者:([^\s]+?) /);
+		$author = $1 if ($arr =~ /<div class="intro"><span>作者:([^\s]*?) /);
 		next if (!defined($url) || !defined($title) || !defined($author));
 		wlog("$url $title $author");
 		$books{"$url $title"} = [$url, $title, $author];
@@ -33,13 +34,16 @@ for (my $page = 1; $page < $end_page; ++$page) {
 foreach my $book (values %books) {
     my ($book_url, $title, $author) = @$book;
 	my @chapters;
+	my $status = 0;
 	my $book_html = fetch_url($book_url, $spider_name);
 	$book_html = gbk_to_utf8($book_html);
+	my $intro = $1 if ($book_html =~ /&nbsp;类别：[^<]+?<br>\s*([\d\D]*?)\s*<\/div>/);
+	wlog($intro);
 	while ($book_html =~ /<li><a href="(\/\d+\/\d+\.html)" title="([^"]+?)">/g) {
 		my $chapter_url = "http://www.bxs.cc".$1;
 		push @chapters, [$chapter_url, $2];
 		wlog("$chapter_url $2");
 	}
-	save_to_db($title, $author, \@chapters, $spider_name);
+	save_to_db($title, $author, \@chapters, $spider_name, $status, $intro);
 }
 

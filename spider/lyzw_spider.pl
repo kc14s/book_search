@@ -2,6 +2,7 @@
 use strict;
 require('config.pl');
 require('lib.pl');
+require('data.pl');
 
 my $spider_name = 'lyzw';
 my $db_conn = conn_db();
@@ -17,29 +18,33 @@ for (my $page = 1; $page < $end_page; ++$page) {
 	}
 	my @arr = split('<tr>', $booklist_html);
 	foreach my $arr (@arr) {
-		my ($url, $title, $author);
+		my ($url, $title, $author, $status);
 		if ($arr =~ /<td class="odd"><a href="(http:\/\/www\.6yzw\.org\/[\d_]+?\/)">([^"]+?)<\/a><\/td>/) {
 			$url = $1;
 			$title = $2;
 		}
 		$author = $1 if ($arr =~ /<td class="odd">([^"]+?)<\/td>/);
 		next if (!defined($url) || !defined($title) || !defined($author));
-		wlog("$url $title $author");
-		$books{"$url $title"} = [$url, $title, $author];
+#		$status = get_status($1) if ($arr =~ /<td class="even" align="center">([^<]+?)<\/td>/);	#	源网站状态无效
+		$status = 0;
+		wlog("$url $title $author $status");
+		$books{"$url $title"} = [$url, $title, $author, $status] if (!defined($books{"$url $title"}));
 	}
 #	$end_page = 2;	#debug
 }
 
 foreach my $book (values %books) {
-    my ($book_url, $title, $author) = @$book;
+    my ($book_url, $title, $author, $status) = @$book;
 	my @chapters;
 	my $book_html = fetch_url($book_url, $spider_name);
 	$book_html = gbk_to_utf8($book_html);
+	my $intro = $1 if ($book_html =~ /的简介：<\/font><\/p>\s*([\d\D]+?)\s*<\/div>/);
+	wlog($intro);
 	while ($book_html =~ /<dd><a href="([\/_\.\w]+)" title="([^"]+?)">/g) {
 		my $chapter_url = "www.6yzw.org$1";
 		push @chapters, [$chapter_url, $2];
 		wlog("$chapter_url $2");
 	}
-	save_to_db($title, $author, \@chapters, $spider_name);
+	save_to_db($title, $author, \@chapters, $spider_name, $status, $intro);
 }
 

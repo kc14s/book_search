@@ -28,8 +28,8 @@ for (my $page = 1; $page < $end_page; ++$page) {
 			$status = $2;
 		}
 		next if (!defined($url) || !defined($title) || !defined($author));
-		wlog("$url $title $author $status");
 		$status = get_status($status);
+		wlog("$url $title $author $status");
 		$books{"$url $title"} = [$url, $title, $author, $status] if (!defined($books{"$url $title"}));
 	}
 	last;	#debug

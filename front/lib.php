@@ -1,5 +1,6 @@
 <?php
 require_once('config.php');
+require_once('data.php');
 
 function init() {
 	check_parameters();
@@ -40,4 +41,31 @@ function execute_vector($sql) {
 		return $row;
 	}
 }
+
+function format_intro($intro) {
+	if (strpos($intro, '<') === false && strpos($intro, '&') === false) {
+		$intro = str_replace("\n", '<br>', $intro);
+		$intro = str_replace('  ', ' &nbsp;', $intro);
+	}
+	return $intro;
+}
+
+function html_to_text($html) {
+	$html = str_replace('&nbsp;', '', $html);
+	$html = preg_replace('/<.+?>/', '', $html);
+	$html = preg_replace('/&.+?;/', '', $html);
+	return $html;
+}
+
+function get_category_nav() {
+	$category_ids = array(13, 23, 8, 19, 21, 20, 10, 15);
+	$ret = '';
+	global $categories;
+	for ($i = 0; $i < count($category_ids); ++$i) {
+		if ($i != 0) $ret .= ' &nbsp; ';
+		$ret .= '<a href="leaderboard.php?category='.$category_ids[$i].'&page=1" target="_blank">'.$categories[$category_ids[$i]].'</a>';
+	}
+	return $ret;
+}
+
 ?>
