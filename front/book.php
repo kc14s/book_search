@@ -26,25 +26,24 @@ $html .= '<div class="row"><div class="col-md-8 col-md-offset-2" align="left">'.
 $html .= "</div>";
 $current_source = isset($_GET['source']) ? $_GET['source'] : $sources[0];
 $result = mysql_query("select id, title, url, source_id from chapter where book_id = $book_id and source_id = '$current_source' order by id");
-$col = 0;
-$html .= '<table class="table table-striped">';
+$chapters = array();
 while(list($chapter_id, $chapter_title, $url, $source_id) = mysql_fetch_array($result)) {
+	$chapters[] = array($chapter_id, $chapter_title, $url, $source_id);
+}
+$col = 0;
+$html .= '<div class="panel panel-primary"><div class="panel-heading"><h3 class="panel-title">最新章节</h3></div>';
+$html .= '<table class="table table-striped">';
+for ($i = count($chapters) - 1; $i >= 0 && $i >= count($chapters) - 6; --$i) {
+	list($chapter_id, $chapter_title, $url, $source_id) = $chapters[$i];
 	if ($col % 3 == 0) {
 		$html .= '<tr>';
 	}
 	$html .= '<td>';
-	$link_id = 0;
 	if (isset($baidu_transcode[$source_id])) {}
 	else {
 		$url = "http://gate.baidu.com/tc?from=opentc&src=$url";
 	}
-	if ($link_id == 0) {
-		$html .= "<a href=\"$url\" target=\"_blank\">$chapter_title</a> &nbsp; &nbsp;";
-	}
-	else {
-		$html .= " <small><a href=\"$url\" target=\"_blank\">镜像$link_id</a></small>";
-	}
-	++$link_id;
+	$html .= "<a href=\"$url\" target=\"_blank\">$chapter_title</a> &nbsp; &nbsp;";
 	$html .= '</td>';
 	if ($col % 3 == 2) {
 		$html .= '</tr>';
@@ -52,6 +51,29 @@ while(list($chapter_id, $chapter_title, $url, $source_id) = mysql_fetch_array($r
 	$col = ++$col % 3;
 }
 $html .= '</table>';
+$html .= '</div>';
+$col = 0;
+$html .= '<div class="panel panel-primary"><div class="panel-heading"><h3 class="panel-title">全文阅读</h3></div>';
+$html .= '<table class="table table-striped">';
+for ($i = 0; $i < count($chapters); ++$i) {
+	list($chapter_id, $chapter_title, $url, $source_id) = $chapters[$i];
+	if ($col % 3 == 0) {
+		$html .= '<tr>';
+	}
+	$html .= '<td>';
+	if (isset($baidu_transcode[$source_id])) {}
+	else {
+		$url = "http://gate.baidu.com/tc?from=opentc&src=$url";
+	}
+	$html .= "<a href=\"$url\" target=\"_blank\">$chapter_title</a> &nbsp; &nbsp;";
+	$html .= '</td>';
+	if ($col % 3 == 2) {
+		$html .= '</tr>';
+	}
+	$col = ++$col % 3;
+}
+$html .= '</table>';
+$html .= '</div></div>';
 $html_title = $book_title.' '.$chapter_title;
 require_once('header.php');
 require_once('query_banner.php');

@@ -44,7 +44,7 @@ sub save_to_db {
 		$db_conn->do("insert into book(title, author, source_id, status, intro) values($title, $author, '$source_id', $status, $intro)");
 	}
 	else {
-		if ($source_id ne 'lyzw' || $source_id ne 'jamw') {
+		if ($source_id ne 'lyzw' || $source_id ne 'jamw' || $source_id ne 'qd') {
 			$db_conn->do("update book set status = $status where title = $title and author = $author");
 		}
 	}
