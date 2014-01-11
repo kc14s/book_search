@@ -25,17 +25,22 @@ for (my $page = 1; $page < $end_page; ++$page) {
 		}
 		$author = $1 if ($arr =~ /authorIndex\.aspx\?id=\d+" target="_blank" class="black">([^<]+?)<\/a><\/div>/);
 		next if (!defined($book_url) || !defined($title) || !defined($author));
-		my $intro_html = fetch_url($intro_url, $spider_name);
-		my $intro = $1 if ($intro_html =~ /<span itemprop="description">\s*([\d\D]*?)\s*<\/span>/);
-		wlog("$book_url $title $author $intro");
-		$books{"$book_url $title"} = [$book_url, $title, $author, $intro] if (!defined($books{"$book_url $title"}));
+#		my $intro_html = fetch_url($intro_url, $spider_name);
+#		my $intro = $1 if ($intro_html =~ /<span itemprop="description">\s*([\d\D]*?)\s*<\/span>/);
+		wlog("$book_url $title $author $intro_url");
+		$books{"$book_url $title"} = [$book_url, $title, $author, $intro_url] if (!defined($books{"$book_url $title"}));
 	}
 #	last;	#debug
 }
 
 foreach my $book (values %books) {
-    my ($book_url, $title, $author, $intro) = @$book;
+    my ($book_url, $title, $author, $intro_url) = @$book;
 	my @chapters;
+	my $intro = '';
+	if (!book_exist($title, $author)) {
+		my $intro_html = fetch_url($intro_url, $spider_name);
+		$intro = $1 if ($intro_html =~ /<span itemprop="description">\s*([\d\D]*?)\s*<\/span>/);
+	}
 	my $book_html = fetch_url($book_url, $spider_name);
 	my $status = 0;
 	while ($book_html =~ /<a itemprop='url' href="(http:\/\/read\.qidian\.com\/BookReader\/\d+,\d+\.aspx)" title='字数：[\d,]+\s*更新时间：[\d\- :]+'><span itemprop='headline'>([^<]+?)<\/span><\/a>/g) {

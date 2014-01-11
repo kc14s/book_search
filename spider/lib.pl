@@ -36,6 +36,9 @@ sub gbk_to_utf8 {
 }
 
 sub save_to_db {
+	if (!$db_conn->prepare("select count(*) from book")) {
+		conn_db();
+	}
 	my ($title, $author, $chapters, $source_id, $status, $intro) = @_;
 	$title = $db_conn->quote($title);
 	$author = $db_conn->quote($author);
@@ -92,6 +95,13 @@ sub wlog {
 #	chop $date_time;
 #	print "$date_time $_[0]\n";
 	print get_date_time_str().' '.$_[0]."\n";
+}
+
+sub book_exist {
+	my ($book_title, $author) = @_;
+	$book_title = $db_conn->quote($book_title);
+	$author = $db_conn->quote($author);
+	return execute_scalar("select count(*) from book where title = $book_title and author = $author", $db_conn) > 0;
 }
 
 1;

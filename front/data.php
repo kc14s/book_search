@@ -30,7 +30,9 @@ $categories = array(
 $statuses = array(
 '连载中',
 '已完结',
-'连载中'
+'连载中',
+'暂停',
+'封笔'
 );
 
 $g_sources = array(

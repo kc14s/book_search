@@ -28,17 +28,22 @@ for (my $page = 1; $page < $end_page; ++$page) {
 		$author = $1 if ($arr =~ /<div class="storelistbt3d"><a href="[^"]+?">([^"]+?)<\/a><\/div>/);
 		next if (!defined($url) || !defined($title) || !defined($author));
 		$status = get_status($1) if ($arr =~ /<div class="storelistbt3e">([^<]+?)<\/div>/);
-		my $book_intro_html = gbk_to_utf8(fetch_url($book_intro_url));
-		$intro = $1 if ($book_intro_html =~ /<li id="articledesc" class="a2">\s*([^<]+?)\s*<\/li>/);
-		wlog("http://www.ranwen.cc$url $title $author $status $intro");
-		$books{"$url $title"} = ["http://www.ranwen.cc$url", $title, $author, $status, $intro] if (!defined($books{"$url $title"}));
+#		my $book_intro_html = gbk_to_utf8(fetch_url($book_intro_url));
+#		$intro = $1 if ($book_intro_html =~ /<li id="articledesc" class="a2">\s*([^<]+?)\s*<\/li>/);
+		wlog("http://www.ranwen.cc$url $title $author $status $book_intro_url");
+		$books{"$url $title"} = ["http://www.ranwen.cc$url", $title, $author, $status, $book_intro_url] if (!defined($books{"$url $title"}));
 	}
 #	$end_page = 2;	#debug
 }
 
 foreach my $book (values %books) {
-    my ($book_url, $title, $author, $status, $intro) = @$book;
+    my ($book_url, $title, $author, $status, $intro_url) = @$book;
 	my @chapters;
+	my $intro;
+	if (!book_exist($title, $author)) {
+		my $book_intro_html = gbk_to_utf8(fetch_url($intro_url));
+		$intro = $1 if ($book_intro_html =~ /<li id="articledesc" class="a2">\s*([^<]+?)\s*<\/li>/);
+	}
 	my $book_html = fetch_url($book_url, $spider_name);
 	$book_html = gbk_to_utf8($book_html);
 	while ($book_html =~ /<li><a href="([\w\.]+?)"\s+title="[\d\-\s:]+">([^"]+)<\/a>/g) {
