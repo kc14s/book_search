@@ -23,12 +23,12 @@ for (my $page = 1; $page < $end_page; ++$page) {
 			$url = "http://www.bxs.cc$1";
 			$title = $2;
 		}
-		$author = $1 if ($arr =~ /<div class="intro"><span>作者:([^\s]*?) /);
+		$author = $1 if ($arr =~ /<div class="intro"><span>作者:([^\s]*?)[著]* /);
 		next if (!defined($url) || !defined($title) || !defined($author));
 		wlog("$url $title $author");
 		$books{"$url $title"} = [$url, $title, $author];
 	}
-#	$end_page = 2;	#debug
+	$end_page = 2;	#debug
 }
 
 foreach my $book (values %books) {

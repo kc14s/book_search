@@ -45,7 +45,7 @@ if ($page <= 1) {
 	$html .= '<li class="disabled"><a href="#">&laquo;</a></li>';
 }
 else {
-	$html .= '<li><a href="leaderboard.php?category='.$category_id.'&page='.($page - 1).'">&laquo;</a></li>';
+	$html .= '<li><a href="leaderboard.php?category='.$category_id.'&page='.($page - 1).'" target="_self">&laquo;</a></li>';
 }
 $total_page = $book_num / $page_size;
 $start_page = $page >= 3 ? $page - 2 : 1;
@@ -55,14 +55,14 @@ for ($p = $start_page; $p <= $end_page; ++$p) {
 		$html .= '<li class="disabled"><a href="#">'.$p.'</a></li>';
 	}
 	else {
-		$html .= '<li><a href="leaderboard.php?category='.$category_id.'&page='.$p.'">'.$p.'</a></li>';
+		$html .= '<li><a href="leaderboard.php?category='.$category_id.'&page='.$p.'" target="_self">'.$p.'</a></li>';
 	}
 }
 if ($num_rows < $page_size) {
 	$html .= '<li class="disabled"><a href="#">&raquo;</a></li>';
 }
 else {
-	$html .= '<li><a href="leaderboard.php?category='.$category_id.'&page='.($page + 1).'">&raquo;</a></li>';
+	$html .= '<li><a href="leaderboard.php?category='.$category_id.'&page='.($page + 1).'" target="_self">&raquo;</a></li>';
 }
 $html .= '</ul>';
 require_once('header.php');

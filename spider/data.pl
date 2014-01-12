@@ -6,6 +6,8 @@ my %status = (
   '完结' => 1,
   '完成' => 1,
   '已完成' => 1,
+  '已出版' => 1,
+  '出版中' => 1,
   '连载' => 2,
   '连载中' => 2,
   '暂停' => 3,
@@ -41,12 +43,14 @@ my %categories = (
 );
 
 sub get_status {
-	$_[0] =~ s/\s//g;
-	if (!defined($status{$_[0]})) {
-		wlog("invalid status $_[0]");
+	my $status = $_[0];
+	$status =~ s/\s//g;
+	$status =~ s/　//g;
+	if (!defined($status{$status})) {
+		wlog("invalid status $status");
 		exit;
 	}
-	return $status{$_[0]};
+	return $status{$status};
 }
 
 sub get_category {

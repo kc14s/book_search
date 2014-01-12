@@ -47,8 +47,8 @@ foreach my $book (values %books) {
 	my $book_html = fetch_url($book_url, $spider_name);
 	$book_html = gbk_to_utf8($book_html);
 	while ($book_html =~ /<li><a href="([\w\.]+?)"\s+title="[\d\-\s:]+">([^"]+)<\/a>/g) {
-		push @chapters, [substr($book_url, 7, rindex($book_url, '/') + 1).$1, $2];
-		wlog(substr($book_url, 7, rindex($book_url, '/') + 1).$1." $2");
+		push @chapters, [substr($book_url, 7, rindex($book_url, '/') + 1 - 7).$1, $2];
+		wlog(substr($book_url, 7, rindex($book_url, '/') + 1 - 7).$1." $2");
 	}
 	save_to_db($title, $author, \@chapters, $spider_name, $status, $intro);
 }

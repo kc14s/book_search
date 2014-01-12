@@ -43,7 +43,7 @@ sub save_to_db {
 	$title = $db_conn->quote($title);
 	$author = $db_conn->quote($author);
 	$intro = $db_conn->quote($intro);
-	if (execute_scalar("select count(*) from book where title = $title and author = $author", $db_conn) == 0) {
+	if (execute_scalar("select count(*) from book where title = $title and (author = $author or instr(author, $author) > 0 or instr($author, author) > 0)", $db_conn) == 0) {
 		$db_conn->do("insert into book(title, author, source_id, status, intro) values($title, $author, '$source_id', $status, $intro)");
 	}
 	else {
@@ -51,7 +51,7 @@ sub save_to_db {
 			$db_conn->do("update book set status = $status where title = $title and author = $author");
 		}
 	}
-	my $book_id = execute_scalar("select id from book where title = $title and author = $author", $db_conn);
+	my $book_id = execute_scalar("select id from book where title = $title and (author = $author or instr(author, $author) > 0 or instr($author, author) > 0)", $db_conn);
 	foreach my $pa (@$chapters) {
 		my ($chapter_url, $chapter_title) = @$pa;
 		$chapter_title = $db_conn->quote($chapter_title);
