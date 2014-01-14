@@ -18,21 +18,22 @@ for (my $page = 1; $page < $end_page; ++$page) {
 	}
 	my @arr = split('</tr>', $booklist_html);
 	foreach my $arr (@arr) {
-		my ($url, $title, $author);
+		my ($url, $title, $author, $category);
 		if ($arr =~ /<td class="tdLeft"><a href="(http:\/\/www\.sqsxs\.com\/[\w\/\.]+?)">([^"]+?)<\/a><\/td>/) {
 			$url = $1;
 			$title = $2;
 		}
 		$author = $1 if ($arr =~ /<td><a href="http:\/\/www\.sqsxs\.com\/modules\/article\/authorarticle\.php\?author=[\w%]+?">([^"]+?)<\/a><\/td>/);
 		next if (!defined($url) || !defined($title) || !defined($author));
+		$category = $1 if ($arr =~ /<td class="tdLeft">【([^<]*?)】<\/td>/);
 		wlog("$url $title $author");
-		$books{"$url $title"} = [$url, $title, $author];
+		$books{"$url $title"} = [$url, $title, $author, $category];
 	}
 #	$end_page = 2;	#debug
 }
 
 foreach my $book (values %books) {
-    my ($book_url, $title, $author) = @$book;
+    my ($book_url, $title, $author, $category) = @$book;
 	my @chapters;
 	my $book_html = fetch_url($book_url, $spider_name);
 	$book_html = gbk_to_utf8($book_html);
@@ -45,6 +46,6 @@ foreach my $book (values %books) {
 		push @chapters, [$chapter_url, $2];
 		wlog("$chapter_url $2");
 	}
-	save_to_db($title, $author, \@chapters, $spider_name, $status, $intro);
+	save_to_db($title, $author, \@chapters, $spider_name, $status, $intro, $category);
 }
 

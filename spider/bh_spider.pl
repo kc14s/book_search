@@ -38,12 +38,13 @@ foreach my $book (values %books) {
 	my $book_html = fetch_url($book_url, $spider_name);
 	$book_html = gbk_to_utf8($book_html);
 	my $intro = $1 if ($book_html =~ /简介：<\/font>\s*([\d\D]*?)\s*<\/div>/);
-	wlog($intro);
+	my $category = $1 if ($book_html =~ /var sortname='([^']+?)';/);
+	wlog($category, $intro);
 	while ($book_html =~ /<span><a href="(\d+\.html)">([^<]+?)<\/a><\/span>/g) {
-		my $chapter_url = substr($book_url, 0, length($book_url) - 10).$1;
+		my $chapter_url = substr($book_url, 7, length($book_url) - 10 - 7).$1;
 		push @chapters, [$chapter_url, $2];
 		wlog("$chapter_url $2");
 	}
-	save_to_db($title, $author, \@chapters, $spider_name, $status, $intro);
+	save_to_db($title, $author, \@chapters, $spider_name, $status, $intro, $category);
 }
 

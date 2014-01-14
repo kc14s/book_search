@@ -18,7 +18,7 @@ for (my $page = 1; $page < $end_page; ++$page) {
 	}
 	my @arr = split('<div class="li_body">', $booklist_html);
 	foreach my $arr (@arr) {
-		my ($title, $author, $status, $book_url, $intro_url);
+		my ($title, $author, $status, $book_url, $intro_url, @categories);
 		if ($arr =~ /<h3><a href="http:\/\/www\.xs8\.cn\/book\/(\d+)\/index\.html"\s*target="_blank">《([^<]+?)》<\/a><\/h3>/) {
 			$intro_url = "http://www.xs8.cn/book/$1/index.html";
 			$book_url = "http://www.xs8.cn/book/$1/readbook.html";
@@ -26,15 +26,18 @@ for (my $page = 1; $page < $end_page; ++$page) {
 		}
 		$author = $1 if ($arr =~ /<span class="author">作者：<a href="http:\/\/www\.xs8\.cn\/author\/\d+\.html"\s+target="_blank">([^<]+?)<\/a><\/span>/);
 		next if (!defined($book_url) || !defined($title) || !defined($author));
+		while ($arr =~ /<span class="tag">([^<]+?)<\/span>/g) {
+			push @categories, $1;
+		}
 		$status = get_status($1) if ($arr =~ /<span class="status">([^<]+?)<\/span>/);
 		wlog("$book_url $title $author $status");
-		$books{"$book_url $title"} = [$book_url, $intro_url, $title, $author, $status] if (!defined($books{"$book_url $title"}));
+		$books{"$book_url $title"} = [$book_url, $intro_url, $title, $author, $status, @categories] if (!defined($books{"$book_url $title"}));
 	}
 #	last;	#debug
 }
 
 foreach my $book (values %books) {
-    my ($book_url, $intro_url, $title, $author, $status) = @$book;
+    my ($book_url, $intro_url, $title, $author, $status, @categories) = @$book;
 	my @chapters;
 	my $intro = '';
 	if (!book_exist($title, $author)) {
@@ -48,6 +51,6 @@ foreach my $book (values %books) {
 		push @chapters, [$chapter_url, $2];
 		wlog("$chapter_url $2");
 	}
-	save_to_db($title, $author, \@chapters, $spider_name, $status, $intro);
+	save_to_db($title, $author, \@chapters, $spider_name, $status, $intro, @categories);
 }
 

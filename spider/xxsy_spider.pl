@@ -15,23 +15,24 @@ for (my $page = 1; $page < $end_page; ++$page) {
 #	if ($booklist_html =~ /\/(\d+)<\/span> 页,共/) {
 #		$end_page = $1;
 #	}
-	my ($title, $author, $status, $book_url, $intro_url, $book_id);
-	while ($booklist_html =~ /"authorname":"([^"]+?)","banquan":"[^"]+?","bookid":(\d+),"booklength":\d+,"bookname":"([^"]+?)"[\d\D]+?"lianzai":"([^"]+?)"/g) {
+	my ($title, $author, $status, $book_url, $intro_url, $book_id, $category);
+	while ($booklist_html =~ /"authorname":"([^"]+?)","banquan":"[^"]+?","bookid":(\d+),"booklength":\d+,"bookname":"([^"]+?)","booktype":"([^"]+?)"[\d\D]+?"lianzai":"([^"]+?)"/g) {
 		$intro_url = "http://www.xxsy.net/info/$2.html";
 		$book_url = "http://www.xxsy.net/books/$2/default.html";
 		$book_id = $2;
 		$title = $3;
 		$author = $1;
-		$status = get_status($4);
+		$category = $4;
+		$status = get_status($5);
 		next if (!defined($book_url) || !defined($title) || !defined($author));
-		wlog("$book_url $title $author $status");
-		$books{"$book_url $title"} = [$book_url, $intro_url, $title, $author, $status, $book_id] if (!defined($books{"$book_url $title"}));
+		wlog("$book_url $title $author $status $category");
+		$books{"$book_url $title"} = [$book_url, $intro_url, $title, $author, $status, $book_id, $category] if (!defined($books{"$book_url $title"}));
 	}
 #	last;	#debug
 }
 
 foreach my $book (values %books) {
-    my ($book_url, $intro_url, $title, $author, $status, $book_id) = @$book;
+    my ($book_url, $intro_url, $title, $author, $status, $book_id, $category) = @$book;
 	my @chapters;
 	my $intro = '';
 	if (!book_exist($title, $author)) {
@@ -41,10 +42,10 @@ foreach my $book (values %books) {
 	}
 	my $book_html = fetch_url($book_url, $spider_name);
 	while ($book_html =~ /<li><a href="(\d+)\.html" title="[^"]+?">([^<]+?)<\/a><\/li>/g) {
-		my $chapter_url = "http://www.xxsy.net/books/533901/$1.html";
+		my $chapter_url = "http://www.xxsy.net/books/$book_id/$1.html";
 		push @chapters, [$chapter_url, $2];
 		wlog("$chapter_url $2");
 	}
-	save_to_db($title, $author, \@chapters, $spider_name, $status, $intro);
+	save_to_db($title, $author, \@chapters, $spider_name, $status, $intro, $category);
 }
 

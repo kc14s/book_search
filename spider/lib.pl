@@ -39,7 +39,7 @@ sub save_to_db {
 	if (!$db_conn->prepare("select count(*) from book")) {
 		conn_db();
 	}
-	my ($title, $author, $chapters, $source_id, $status, $intro) = @_;
+	my ($title, $author, $chapters, $source_id, $status, $intro, @categories) = @_;
 	$title = $db_conn->quote($title);
 	$author = $db_conn->quote($author);
 	$intro = $db_conn->quote($intro);
@@ -52,6 +52,10 @@ sub save_to_db {
 		}
 	}
 	my $book_id = execute_scalar("select id from book where title = $title and (author = $author or instr(author, $author) > 0 or instr($author, author) > 0)", $db_conn);
+	foreach my $category (@categories) {
+		$category = $db_conn->quote($category);
+		$db_conn->do("replace into category(book_id, source_id, category) values($book_id, '$source_id', $category)");
+	}
 	foreach my $pa (@$chapters) {
 		my ($chapter_url, $chapter_title) = @$pa;
 		$chapter_title = $db_conn->quote($chapter_title);

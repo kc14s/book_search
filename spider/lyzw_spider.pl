@@ -41,12 +41,13 @@ foreach my $book (values %books) {
 	my $intro = $1 if ($book_html =~ /的简介：<\/font><\/p>\s*([\d\D]+?)\s*<\/div>/);
 	$intro =~ s/<p>【作品简介】：\s*<[^>]+?>\s*//;
 	$intro =~ s/<p>\s*<\/p>//;
-	wlog($intro);
+	my $category = $1 if ($book_html =~ /&gt; <a href="\/class\d+_\d+\/">([^<]+?)<\/a> &gt;/);
+	wlog("$category $intro");
 	while ($book_html =~ /<dd><a href="([\/_\.\w]+)" title="([^"]+?)">/g) {
 		my $chapter_url = "www.6yzw.org$1";
 		push @chapters, [$chapter_url, $2];
 		wlog("$chapter_url $2");
 	}
-	save_to_db($title, $author, \@chapters, $spider_name, $status, $intro);
+	save_to_db($title, $author, \@chapters, $spider_name, $status, $intro, $category);
 }
 

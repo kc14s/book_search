@@ -28,15 +28,16 @@ for (my $page = 1; $page < $end_page; ++$page) {
 			$status = $2;
 		}
 		next if (!defined($url) || !defined($title) || !defined($author));
+		my $category = $1 if ($arr =~ /<td class="tdLeft">【([^<]+?)】<\/td>/);
 		$status = get_status($status);
-		wlog("$url $title $author $status");
-		$books{"$url $title"} = [$url, $title, $author, $status] if (!defined($books{"$url $title"}));
+		wlog("$url $title $author $status $category");
+		$books{"$url $title"} = [$url, $title, $author, $status, $category] if (!defined($books{"$url $title"}));
 	}
 #	last;	#debug
 }
 
 foreach my $book (values %books) {
-    my ($book_intro_url, $title, $author, $status) = @$book;
+    my ($book_intro_url, $title, $author, $status, $category) = @$book;
 	my @chapters;
 	my $book_intro_html = fetch_url($book_intro_url, $spider_name);
 	$book_intro_html = gbk_to_utf8($book_intro_html);
@@ -50,6 +51,6 @@ foreach my $book (values %books) {
 		push @chapters, [$chapter_url, $2];
 		wlog("$chapter_url $2");
 	}
-	save_to_db($title, $author, \@chapters, $spider_name, $status, $intro);
+	save_to_db($title, $author, \@chapters, $spider_name, $status, $intro, $category);
 }
 

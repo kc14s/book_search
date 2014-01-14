@@ -25,14 +25,15 @@ for (my $page = 1; $page < $end_page; ++$page) {
 		}
 		$author = $1 if ($arr =~ /searchsubmit=yes" class="black" target="_blank">([^<]+?)<\/a><\/div>/);
 		next if (!defined($url) || !defined($title) || !defined($author));
-		wlog("$url $title $author");
-		$books{"$url $title"} = [$url, $title, $author] if (!defined($books{"$url $title"}));
+		my $category = $1 if ($arr =~ /<a rel="nofollow" href="\/shuku\/\d+\.html" class="gray">([^<]+?)<\/a>]/);
+		wlog("$url $title $author $category");
+		$books{"$url $title"} = [$url, $title, $author, $category] if (!defined($books{"$url $title"}));
 	}
 #	last;	#debug
 }
 
 foreach my $book (values %books) {
-    my ($book_url, $title, $author) = @$book;
+    my ($book_url, $title, $author, $category) = @$book;
 	my @chapters;
 	my $book_html = fetch_url($book_url, $spider_name);
 	$book_html = gbk_to_utf8($book_html);
@@ -44,6 +45,6 @@ foreach my $book (values %books) {
 		push @chapters, [$chapter_url, $2];
 		wlog("$chapter_url $2");
 	}
-	save_to_db($title, $author, \@chapters, $spider_name, $status, $intro);
+	save_to_db($title, $author, \@chapters, $spider_name, $status, $intro, $category);
 }
 

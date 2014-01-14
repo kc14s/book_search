@@ -28,7 +28,7 @@ for (my $page = 1; $page < $end_page; ++$page) {
 		wlog("$url $title $author");
 		$books{"$url $title"} = [$url, $title, $author];
 	}
-	$end_page = 2;	#debug
+#	$end_page = 2;	#debug
 }
 
 foreach my $book (values %books) {
@@ -37,6 +37,7 @@ foreach my $book (values %books) {
 	my $status = 0;
 	my $book_html = fetch_url($book_url, $spider_name);
 	$book_html = gbk_to_utf8($book_html);
+	my $category = $1 if ($book_html =~ /类别：([^<]+?)<br>/);
 	my $intro = $1 if ($book_html =~ /&nbsp;类别：[^<]+?<br>\s*([\d\D]*?)\s*<\/div>/);
 	wlog($intro);
 	while ($book_html =~ /<li><a href="(\/\d+\/\d+\.html)" title="([^"]+?)">/g) {
@@ -44,6 +45,6 @@ foreach my $book (values %books) {
 		push @chapters, [$chapter_url, $2];
 		wlog("$chapter_url $2");
 	}
-	save_to_db($title, $author, \@chapters, $spider_name, $status, $intro);
+	save_to_db($title, $author, \@chapters, $spider_name, $status, $intro, $category);
 }
 

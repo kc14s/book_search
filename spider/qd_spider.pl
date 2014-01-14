@@ -17,7 +17,7 @@ for (my $page = 1; $page < $end_page; ++$page) {
 	}
 	my @arr = split('<div class="swa">', $booklist_html);
 	foreach my $arr (@arr) {
-		my ($book_url, $intro_url, $title, $author, $status);
+		my ($book_url, $intro_url, $title, $author, $status, @categories);
 		if ($arr =~ /<span class="swbt"><a href="\/Book\/(\d+)\.aspx" target="_blank">([^<]+?)<\/a>/) {
 			$intro_url = "http://www.qidian.com/Book/$1.aspx";
 			$book_url = "http://readbook.qidian.com/bookreader/$1.html";
@@ -25,16 +25,16 @@ for (my $page = 1; $page < $end_page; ++$page) {
 		}
 		$author = $1 if ($arr =~ /authorIndex\.aspx\?id=\d+" target="_blank" class="black">([^<]+?)<\/a><\/div>/);
 		next if (!defined($book_url) || !defined($title) || !defined($author));
-#		my $intro_html = fetch_url($intro_url, $spider_name);
-#		my $intro = $1 if ($intro_html =~ /<span itemprop="description">\s*([\d\D]*?)\s*<\/span>/);
+		push @categories, $1 if ($arr =~ /bookstore\.aspx\?ChannelId=\d+" class="hui2">([^<]+?)<\/a>\//);
+		push @categories, $1 if ($arr =~ /bookstore\.aspx\?ChannelId=\d+&SubCategoryId=\d+"\s*class="hui2">([^<]+?)<\/a>\]/);
 		wlog("$book_url $title $author $intro_url");
-		$books{"$book_url $title"} = [$book_url, $title, $author, $intro_url] if (!defined($books{"$book_url $title"}));
+		$books{"$book_url $title"} = [$book_url, $title, $author, $intro_url, @categories] if (!defined($books{"$book_url $title"}));
 	}
 #	last;	#debug
 }
 
 foreach my $book (values %books) {
-    my ($book_url, $title, $author, $intro_url) = @$book;
+    my ($book_url, $title, $author, $intro_url, @categories) = @$book;
 	my @chapters;
 	my $intro = '';
 	if (!book_exist($title, $author)) {
@@ -48,6 +48,6 @@ foreach my $book (values %books) {
 		push @chapters, [$chapter_url, $2];
 		wlog("$chapter_url $2");
 	}
-	save_to_db($title, $author, \@chapters, $spider_name, $status, $intro);
+	save_to_db($title, $author, \@chapters, $spider_name, $status, $intro, @categories);
 }
 

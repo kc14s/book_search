@@ -22,8 +22,9 @@ foreach my $book (values %books) {
 	wlog($book_url);
 	my $book_html = fetch_url($book_url, $spider_name);
 	$book_html = gbk_to_utf8($book_html);
+	my $category = $1 if ($book_html =~ /&gt;\s*<a href="\/\w+\/">([^<]+?)<\/a>\s*&gt;/);
 	my $intro = ($book_html =~ /<div id="intro">\s*([\d\D]+?)\s*<p>各位书友/) ? $1 : '';
-	wlog("$intro");
+	wlog("$category $intro");
 	my $status = 0;
 	my @arr = split('<dt>', $book_html);
 	for (my $i = 2; $i < @arr; ++$i) {
@@ -33,5 +34,5 @@ foreach my $book (values %books) {
 			wlog("$chapter_url $2");
 		}
 	}
-	save_to_db($title, $author, \@chapters, $spider_name, $status, $intro);
+	save_to_db($title, $author, \@chapters, $spider_name, $status, $intro, $category);
 }
