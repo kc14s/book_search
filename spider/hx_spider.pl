@@ -33,8 +33,10 @@ for (my $page = 1; $page < $end_page; ++$page) {
 	}
 #	last;	#debug
 	if (!$match) {
+		--$page;
 		wlog("page $page, no match. $booklist_html");
-		last;
+		sleep(60);
+#		last;
 	}
 }
 

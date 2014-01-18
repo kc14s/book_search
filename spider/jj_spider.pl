@@ -41,10 +41,11 @@ for (my $page = 1; $page < $end_page; ++$page) {
 		$match = 1;
 	}
 #	last;	#debug
-#	if (!$match) {
-#		wlog("page $page, no match");
-#		last;
-#	}
+	if (!$match) {
+		--$page;
+		wlog("page $page, no match");
+		sleep(600);
+	}
 }
 
 foreach my $book (values %books) {

@@ -47,6 +47,7 @@ foreach my $book (values %books) {
 	}
 	my $book_html = fetch_url($book_url, $spider_name);
 	my $status = 0;
+	wlog($intro);
 	while ($book_html =~ /<a itemprop='url' href="(http:\/\/read\.qidian\.com\/BookReader\/\d+,\d+\.aspx)" title='字数：[\d,]+\s*更新时间：[\d\- :]+'><span itemprop='headline'>([^<]+?)<\/span><\/a>/g) {
 		my $chapter_url = $1;
 		push @chapters, [$chapter_url, $2];

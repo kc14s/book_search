@@ -17,12 +17,12 @@ sub fetch_url {
 #		$params = "-x ";
 	}
 	if (defined($_[1]) && defined($ENV{'slow'}->{$_[1]})) {
-		sleep(3);
+		sleep($ENV{'slow'}->{$_[1]});
 	}
 #	if (defined($_[1]) && defined($ENV{'compressed'}->{$_[1]})) {
 		$params .= ' --compressed';
 #	}
-	my $html = `curl $params -A 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1' -s -i --speed-time 5 --speed-limit 50000 --connect-timeout 60 -m 300 '$_[0]'`;
+	my $html = `curl $params -A 'Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)' -s -i --speed-time 5 --speed-limit 50000 --connect-timeout 60 -m 300 '$_[0]'`;
 	if (length($html) < 100) {
 		wlog(`curl $params -I -A 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1' -s -i --speed-time 5 --speed-limit 50000 --connect-timeout 60 -m 300 '$_[0]'`);
 	}
@@ -39,12 +39,12 @@ sub execute_scalar {
 }
 
 sub gbk_to_utf8 {
-	return encode('utf8', decode('gb2312', $_[0]));
 	return encode('utf8', decode('gbk', $_[0]));
 }
 
 sub save_to_db {
-	if (!$db_conn->prepare("select count(*) from book")) {
+	my $request = $db_conn->prepare("select count(*) from book");
+	if (!$request || $request->execute()) {
 		conn_db();
 	}
 	my ($title, $author, $chapters, $source_id, $status, $intro, @categories) = @_;
