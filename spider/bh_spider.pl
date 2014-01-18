@@ -10,6 +10,7 @@ my $db_conn = conn_db();
 my %books;
 my $end_page = 10000;
 for (my $page = 1; $page < $end_page; ++$page) {
+	wlog("page $page");
 	my $booklist_url = "http://www.binhuo.com/sort_$page.html";
 	my $booklist_html = fetch_url($booklist_url, $spider_name);
 	$booklist_html = gbk_to_utf8($booklist_html);
@@ -17,6 +18,7 @@ for (my $page = 1; $page < $end_page; ++$page) {
 		$end_page = $1;
 	}
 	my @arr = split('<li>', $booklist_html);
+	wlog($booklist_html) if (@arr == 1);
 	foreach my $arr (@arr) {
 		my ($url, $title, $author, $status);
 		if ($arr =~ /<div class="c1"><a href="http:\/\/www\.binhuo\.com\/info_(\d+)\.html" target="_blank">([^<]+?)<\/a>/) {

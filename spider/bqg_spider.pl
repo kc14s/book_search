@@ -29,7 +29,7 @@ foreach my $book (values %books) {
 	my @arr = split('<dt>', $book_html);
 	for (my $i = 2; $i < @arr; ++$i) {
 		while ($book_html =~ /<dd><a href="(\/\d+_\d+\/\d+\.html)">([^<]+?)<\/a><\/dd>/g) {
-			my $chapter_url = "http://www.biquge.com$1";
+			my $chapter_url = "www.biquge.com$1";
 			push @chapters, [$chapter_url, $2];
 			wlog("$chapter_url $2");
 		}

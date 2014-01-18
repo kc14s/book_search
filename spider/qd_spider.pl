@@ -10,12 +10,16 @@ my $db_conn = conn_db();
 my %books;
 my $end_page = 10000;
 for (my $page = 1; $page < $end_page; ++$page) {
+	wlog("page $page");
 	my $booklist_url = "http://all.qidian.com/book/bookstore.aspx?ChannelId=-1&SubCategoryId=-1&Tag=all&Size=-1&Action=-1&OrderId=6&P=all&PageIndex=$page&update=-1&Vip=-1&Boutique=-1&SignStatus=-1";
 	my $booklist_html = fetch_url($booklist_url, $spider_name);
 	if ($booklist_html =~ /PageIndex=(\d+)&update=\-1&Vip=-1&Boutique=\-1&SignStatus=\-1'>末页<\/a>/) {
 		$end_page = $1;
 	}
 	my @arr = split('<div class="swa">', $booklist_html);
+	if (@arr == 1) {
+		wlog($booklist_html);
+	}
 	foreach my $arr (@arr) {
 		my ($book_url, $intro_url, $title, $author, $status, @categories);
 		if ($arr =~ /<span class="swbt"><a href="\/Book\/(\d+)\.aspx" target="_blank">([^<]+?)<\/a>/) {

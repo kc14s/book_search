@@ -10,6 +10,7 @@ my $db_conn = conn_db();
 my %books;
 my $end_page = 10000;
 for (my $page = 1; $page < $end_page; ++$page) {
+	wlog("page $page");
 	my $booklist_url = "http://www.xs8.cn/shuku/c0-t0-f0-w0-u0-o0-2-$page.html";
 	$booklist_url = 'http://www.xs8.cn/shuku/c0-t0-f0-w0-u0-o0-2-.html' if ($page == 1);
 	my $booklist_html = fetch_url($booklist_url, $spider_name);
@@ -17,6 +18,7 @@ for (my $page = 1; $page < $end_page; ++$page) {
 		$end_page = $1;
 	}
 	my @arr = split('<div class="li_body">', $booklist_html);
+	wlog($booklist_html) if (@arr == 1);
 	foreach my $arr (@arr) {
 		my ($title, $author, $status, $book_url, $intro_url, @categories);
 		if ($arr =~ /<h3><a href="http:\/\/www\.xs8\.cn\/book\/(\d+)\/index\.html"\s*target="_blank">《([^<]+?)》<\/a><\/h3>/) {

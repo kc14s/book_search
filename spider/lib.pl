@@ -12,19 +12,26 @@ sub conn_db {
 }
 
 sub fetch_url {
-	my $proxy = '';
+	my $params = '';
 	if (defined($_[1]) && defined($ENV{'use_proxy'}->{$_[1]})) {
-#		$proxy = "-x ";
+#		$params = "-x ";
 	}
 	if (defined($_[1]) && defined($ENV{'slow'}->{$_[1]})) {
 		sleep(3);
 	}
-	my $html = `curl -A 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1' -s -i --speed-time 5 --speed-limit 50000 --connect-timeout 60 -m 300 '$_[0]'`;
+#	if (defined($_[1]) && defined($ENV{'compressed'}->{$_[1]})) {
+		$params .= ' --compressed';
+#	}
+	my $html = `curl $params -A 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1' -s -i --speed-time 5 --speed-limit 50000 --connect-timeout 60 -m 300 '$_[0]'`;
+	if (length($html) < 100) {
+		wlog(`curl $params -I -A 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1' -s -i --speed-time 5 --speed-limit 50000 --connect-timeout 60 -m 300 '$_[0]'`);
+	}
 	return $html;
 }
 
 sub execute_scalar {
 	my ($sql, $conn) = @_;
+#	print "$sql\n";
 	my $request = $conn->prepare($sql);
 	$request->execute();
 	my ($result) = $request->fetchrow_array;
@@ -32,6 +39,7 @@ sub execute_scalar {
 }
 
 sub gbk_to_utf8 {
+	return encode('utf8', decode('gb2312', $_[0]));
 	return encode('utf8', decode('gbk', $_[0]));
 }
 
@@ -51,7 +59,7 @@ sub save_to_db {
 			$db_conn->do("update book set status = $status where title = $title and author = $author");
 		}
 	}
-	my $book_id = execute_scalar("select id from book where title = $title and (author = $author or instr(author, $author) > 0 or instr($author, author) > 0)", $db_conn);
+	my $book_id = execute_scalar("select id from book where title = $title and (author = $author or (instr(author, $author) > 0) or (instr($author, author) > 0))", $db_conn);
 	foreach my $category (@categories) {
 		$category = $db_conn->quote($category);
 		$db_conn->do("replace into category(book_id, source_id, category) values($book_id, '$source_id', $category)");
@@ -98,7 +106,11 @@ sub wlog {
 #	my $date_time = `date '+%F %T'`;
 #	chop $date_time;
 #	print "$date_time $_[0]\n";
-	print get_date_time_str().' '.$_[0]."\n";
+	print get_date_time_str();
+	foreach my $item (@_) {
+		print " $item";
+	}
+	print "\n";
 }
 
 sub book_exist {
