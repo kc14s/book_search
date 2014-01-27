@@ -1,7 +1,6 @@
 <?php
 require_once('lib.php');
 require_once('data.php');
-init();
 $html = '';
 $book_id = $_GET['id'];
 $book_id = (int)$book_id;

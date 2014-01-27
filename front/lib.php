@@ -87,6 +87,11 @@ function get_login_html() {
 	}
 }
 
+function gen_user_id() {
+	mysql_query('insert into user');
+	return execute_scalar('select last_insert_id()');
+}
+
 init();
 
 ?>

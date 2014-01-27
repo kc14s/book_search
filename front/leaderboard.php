@@ -1,6 +1,5 @@
 <?php
 require_once('lib.php');
-init();
 $category_id = $_GET['category'];
 $category_id = (int)$category_id;
 $page = $_GET['page'];

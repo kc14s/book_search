@@ -4,8 +4,10 @@ require_once('qqConnectAPI.php');
 require_once('../lib.php');
 init();
 $qc = new QC();
-if ($qc->qq_callback()) {
+$access_token = $qc->qq_callback();
+if ($access_token) {
 	$open_id = $qc->get_openid();
+	$qc = new QC($access_token, $open_id);
 	$user_info = $qc->get_user_info();
 	list($nick, $figure_url) = array($user_info['nickname'], $user_info['figureurl_qq_1']);
 	$user_id = execute_scalar("select id from user where open_id = '$open_id'");

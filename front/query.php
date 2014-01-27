@@ -1,6 +1,5 @@
 <?php
 require_once('lib.php');
-init();
 $html = '';
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	$title = $_POST['title'];
