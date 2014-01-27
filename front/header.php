@@ -15,6 +15,7 @@ echo $site_name;
 <script src="http://cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script>
 <script src="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
 <base target="_blank">
+<meta property="qc:admins" content="2746676521624354063757" />
 </head>
 <body>
 <div class="row"><div class="col-md-8 col-md-offset-2 col-xs-12">

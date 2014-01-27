@@ -4,6 +4,7 @@ require_once('data.php');
 
 function init() {
 	check_parameters();
+	conn_db();
 }
 
 function conn_db() {
@@ -40,6 +41,7 @@ function execute_vector($sql) {
 	while($row = mysql_fetch_array($result)) {
 		return $row;
 	}
+	return array();
 }
 
 function format_intro($intro) {
@@ -67,5 +69,24 @@ function get_category_nav() {
 	}
 	return $ret;
 }
+
+function get_user_info() {
+	$user_id = $_COOKIE['user_id'];
+	if (!$user_id) return array();
+	$user_info = execute_vector("select id, nick, figure_url from user where id = $user_id");
+	return $user_info;
+}
+
+function get_login_html() {
+	$user_info = get_user_info();
+	if (!$user_info['id']) {
+		return '<a href="#" onclick="window.open(\'qq_connect/login.php\', \''.time().'\',\'width=450,height=320,menubar=0,scrollbars=1, resizable=1,status=1,titlebar=0,toolbar=0,location=1\');"><img src="image/qq_login.png"></a>';
+	}
+	else {
+		return '<img src="'.$user_info['figure_url'].'">'.$user_info['nick'].'，您好';
+	}
+}
+
+init();
 
 ?>

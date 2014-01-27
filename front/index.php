@@ -2,6 +2,18 @@
 require_once('lib.php');
 require_once('header.php');
 ?>
+<nav class="navbar navbar-default" role="navigation">
+<div class="navbar-header">
+<ul class="nav navbar-nav navbar-left">
+<li><a href="/" target="_self">追书宝</a></li>
+</ul>
+</div>
+<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+<ul class="nav navbar-nav navbar-right">
+<li><?php echo get_login_html();?></li>
+</ul>
+</div>
+</nav>
 <p>&nbsp; </p>
 <p>&nbsp; </p>
 <p>&nbsp; </p>
