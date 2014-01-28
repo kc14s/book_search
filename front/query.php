@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		$html = '<div class="alert alert-danger" align="center">抱歉，请至少输入2个汉字或6个字母。</div>';
 	}
 	else {
-		$result = mysql_query("select id, title, author, tieba_follower from book where title like '%".addslashes($title)."%' order by length(title)");
+		$result = mysql_query("select id, title, author, tieba_follower from book where title like '%".addslashes($title)."%' order by tieba_follower desc");
 		$num_rows = mysql_num_rows($result);
 		if ($num_rows === 0) {
 			$html = '<div class="alert alert-warning" align="center">抱歉，没有找到结果。</div>';

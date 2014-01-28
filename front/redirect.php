@@ -17,5 +17,9 @@ if (!isset($user_info['id'])) {
 }
 $user_id = $user_info['id'];
 mysql_query("replace into user_record(user_id, book_id, source_id, chapter_id) values($user_id, $book_id, '$source_id', $chapter_id)");
+if (execute_scalar("select count(*) from user_record where user_id = $user_id") > $book_shelf_size) {
+	mysql_query("delete from user_record where user_id = $user_id and book_id not in (select * from (select book_id from user_record where user_id = $user_id order by update_time desc limit $book_shelf_size) as t)");
+}
 header("Location: $url", 301);
+
 ?>
