@@ -34,7 +34,7 @@ while($row = mysql_fetch_array($result)) {
 	if (strlen($intro) > 50) {
 		$intro = mb_substr($intro, 0, 30, 'utf-8');
 	}
-	$html .= "<tr><td>$rank</td><td><a href=\"book.php?id=$book_id\">$book_title</a></td><td>$author</td><td>$tieba_follower</td><td>$intro</td></tr>";
+	$html .= "<tr><td>$rank</td><td><a href=\"/book/$book_id\">$book_title</a></td><td>$author</td><td>$tieba_follower</td><td>$intro</td></tr>";
 	++$rank;
 }
 $html .= '</table></div></div>';
@@ -43,7 +43,7 @@ if ($page <= 1) {
 	$html .= '<li class="disabled"><a href="#">&laquo;</a></li>';
 }
 else {
-	$html .= '<li><a href="leaderboard.php?category='.$category_id.'&page='.($page - 1).'" target="_self">&laquo;</a></li>';
+	$html .= '<li><a href="/leaderboard/'.$category_id.'/'.($page - 1).'" target="_self">&laquo;</a></li>';
 }
 $total_page = $book_num / $page_size;
 $start_page = $page >= 3 ? $page - 2 : 1;
@@ -53,16 +53,17 @@ for ($p = $start_page; $p <= $end_page; ++$p) {
 		$html .= '<li class="disabled"><a href="#">'.$p.'</a></li>';
 	}
 	else {
-		$html .= '<li><a href="leaderboard.php?category='.$category_id.'&page='.$p.'" target="_self">'.$p.'</a></li>';
+		$html .= '<li><a href="/leaderboard/'.$category_id.'/'.$p.'" target="_self">'.$p.'</a></li>';
 	}
 }
 if ($num_rows < $page_size) {
 	$html .= '<li class="disabled"><a href="#">&raquo;</a></li>';
 }
 else {
-	$html .= '<li><a href="leaderboard.php?category='.$category_id.'&page='.($page + 1).'" target="_self">&raquo;</a></li>';
+	$html .= '<li><a href="/leaderboard/'.$category_id.'/'.($page + 1).'" target="_self">&raquo;</a></li>';
 }
 $html .= '</ul>';
+$html .= $baidu_960_90;
 require_once('header.php');
 require_once('query_banner.php');
 echo $html;

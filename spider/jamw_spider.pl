@@ -29,6 +29,7 @@ for (my $page = 1; $page < $end_page; ++$page) {
 		wlog("$url $title $author $category");
 		$books{"$url $title"} = [$url, $title, $author, $category] if (!defined($books{"$url $title"}));
 	}
+	last if (!next_page($spider_name, $page));
 #	last;	#debug
 }
 

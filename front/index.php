@@ -22,12 +22,12 @@ require_once('header.php');
 <form class="form-inline" role="form" align="center" action="query.php" method="post" target="_self">
 <h1 align="center"><?php echo $site_name;?></h1>
 <p>&nbsp; </p>
-<div class="row"><div class="col-md-8 col-md-offset-2"><?php echo get_category_nav();?><br>
+<div class="row"><div class="col-md-8 col-md-offset-2"><?php echo get_category_nav();?><br />
 <div class="form-group">
-<input type="text" class="form-control" id="book_title" name="title" placeholder="凡人修仙传" size="75">
+<input type="text" class="form-control" id="book_title" name="title" placeholder="凡人修仙传" size="75" />
 </div>
 <button type="submit" class="btn btn-default">搜索</button>
-</div>
+</div></div>
 </form>
 <div class="row"><div class="col-md-6 col-md-offset-3">
 <?php
@@ -39,13 +39,18 @@ if (count($user_info) > 0) {
 	if ($record_num > 0) {
 		echo '<p>&nbsp;</p><p>&nbsp;</p><table class="table "><tr class="success"><th>我的书架</th></tr>';
 		while (list($book_id, $book_title, $chapter_title, $source_id) = mysql_fetch_array($result)) {
-			echo "<tr><td><a href=\"book.php?id=$book_id&source=$source_id\">《${book_title}》 &nbsp; $chapter_title</a></td></tr>";
+			echo "<tr><td><a href=\"book/$book_id/$source_id\">《${book_title}》 &nbsp; $chapter_title</a></td></tr>";
 		}
 		echo '</table>';
 	}
 }
 ?>
 </div></div>
+<p>&nbsp; </p>
+<p>&nbsp; </p>
+<p>&nbsp; </p>
+<p>&nbsp; </p>
+<p>&nbsp; </p>
 <?php
 require_once('footer.php');
 ?>

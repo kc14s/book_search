@@ -10,9 +10,15 @@ my $db_conn = conn_db();
 my %books;
 my $end_page = 10000;
 for (my $page = 1; $page < $end_page; ++$page) {
+#	$page = 1450;
 	wlog("page $page");
 	my $booklist_url = "http://www.binhuo.com/sort_$page.html";
 	my $booklist_html = fetch_url($booklist_url, $spider_name);
+	if (!defined($booklist_html)) {
+		sleep(10);
+		wlog("download failed\n");
+		next;
+	}
 	$booklist_html = gbk_to_utf8($booklist_html);
 	if ($booklist_html =~ /class="last">(\d+)<\/a>/) {
 		$end_page = $1;
@@ -31,6 +37,7 @@ for (my $page = 1; $page < $end_page; ++$page) {
 		wlog("$url $title $author $status");
 		$books{"$url $title"} = [$url, $title, $author, $status] if (!defined($books{"$url $title"}));
 	}
+	last if (!next_page($spider_name, $page));
 #	last;	#debug
 }
 
@@ -38,6 +45,11 @@ foreach my $book (values %books) {
     my ($book_url, $title, $author, $status) = @$book;
 	my @chapters;
 	my $book_html = fetch_url($book_url, $spider_name);
+	if (!defined($book_html)) {
+		sleep(10);
+		wlog("download failed\n");
+		next;
+	}
 	$book_html = gbk_to_utf8($book_html);
 	my $intro = $1 if ($book_html =~ /简介：<\/font>\s*([\d\D]*?)\s*<\/div>/);
 	my $category = $1 if ($book_html =~ /var sortname='([^']+?)';/);

@@ -43,6 +43,7 @@ for (my $page = 1; $page < $end_page; ++$page) {
 			last;
 		}
 	}
+	last if (!next_page($spider_name, $page));
 #	last;	#debug
 }
 

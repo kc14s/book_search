@@ -32,6 +32,7 @@ for (my $page = 1; $page < $end_page; ++$page) {
 		++$match;
 	}
 	wlog($booklist_html) if ($match == 0);
+	last if (!next_page($spider_name, $page));
 #	last;	#debug
 }
 

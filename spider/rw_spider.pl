@@ -35,6 +35,7 @@ for (my $page = 1; $page < $end_page; ++$page) {
 		wlog("http://www.ranwen.cc$url $title $author $status $book_intro_url");
 		$books{"$url $title"} = ["http://www.ranwen.cc$url", $title, $author, $status, $book_intro_url, $category] if (!defined($books{"$url $title"}));
 	}
+	last if (!next_page($spider_name, $page));
 #	$end_page = 2;	#debug
 }
 

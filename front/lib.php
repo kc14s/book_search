@@ -3,6 +3,10 @@ require_once('config.php');
 require_once('data.php');
 
 function init() {
+#	if ($_SERVER['HTTP_HOST'] != 'www.zhuishubao.com') {
+#		header('Location: http://www.zhuishubao.com'.$_SERVER['REQUEST_URI'], TRUE, 301);
+#		exit;
+#	}
 	check_parameters();
 	conn_db();
 }
@@ -46,7 +50,7 @@ function execute_vector($sql) {
 
 function format_intro($intro) {
 	if (strpos($intro, '<') === false && strpos($intro, '&') === false) {
-		$intro = str_replace("\n", '<br>', $intro);
+		$intro = str_replace("\n", '<br />', $intro);
 		$intro = str_replace('  ', ' &nbsp;', $intro);
 	}
 	return $intro;
@@ -65,22 +69,22 @@ function get_category_nav() {
 	global $categories;
 	for ($i = 0; $i < count($category_ids); ++$i) {
 		if ($i != 0) $ret .= ' &nbsp; ';
-		$ret .= '<a href="leaderboard.php?category='.$category_ids[$i].'&page=1" target="_blank">'.$categories[$category_ids[$i]].'</a>';
+		$ret .= '<a href="/leaderboard/'.$category_ids[$i].'/1" target="_blank">'.$categories[$category_ids[$i]].'</a>';
 	}
 	return $ret;
 }
 
 function get_user_info() {
-	$user_id = $_COOKIE['user_id'];
-	if (!$user_id) return array();
+	if (!isset($_COOKIE['user_id'])) return array();
+	if (!isset($user_id)) return array();
 	$user_info = execute_vector("select id, nick, figure_url from user where id = $user_id");
 	return $user_info;
 }
 
 function get_login_html() {
 	$user_info = get_user_info();
-	if (!$user_info['id']) {
-		return '<a href="#" onclick="window.open(\'qq_connect/login.php\', \''.time().'\',\'width=450,height=320,menubar=0,scrollbars=1, resizable=1,status=1,titlebar=0,toolbar=0,location=1\');"><img src="image/qq_login.png"></a>';
+	if (!isset($user_info['id'])) {
+		return '<a href="#" onclick="window.open(\'qq_connect/login.php\', \''.time().'\',\'width=450,height=320,menubar=0,scrollbars=1, resizable=1,status=1,titlebar=0,toolbar=0,location=1\');"><img src="/image/qq_login.png" /></a>';
 	}
 	else {
 		return '<img src="'.$user_info['figure_url'].'">'.$user_info['nick'].'，您好';
@@ -88,8 +92,19 @@ function get_login_html() {
 }
 
 function gen_user_id() {
-	mysql_query('insert into user');
+	mysql_query('insert into user values()');
 	return execute_scalar('select last_insert_id()');
+}
+
+function is_spider() {
+	if (!isset($_SERVER['HTTP_USER_AGENT'])) return false;
+	$ua = $_SERVER['HTTP_USER_AGENT'];
+	if (strpos($ua, 'Baiduspider') === false && strpos($ua, 'Googlebot') === false && strpos($ua, 'baidu Transcoder') === false && strpos($ua, 'msnbot') === false && strpos($ua, 'Sogou') === false && strpos($ua, 'Sosospider') === false && strpos($ua, 'Yahoo!') === false && strpos($ua, 'Kmspider') === false && strpos($ua, 'Mediapartners-Google') === false && strpos($ua, 'YoudaoBot') === false && strpos($ua, '360Spider') === false && strpos($ua, 'bingbot') === false && strpos($ua, 'JikeSpider') === false && strpos($ua, 'EasouSpider') === false) {
+		return false;
+	}
+	else {
+		return true;
+	}
 }
 
 init();

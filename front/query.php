@@ -24,11 +24,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 					++$exact_match_count;
 					$exact_match_book_id = $book_id;
 				}
-				$html .= '<a href="book.php?id='.$book_id.'" class="list-group-item"><strong>'.$book_title.'</strong> &nbsp; &nbsp; <small>作者：'.$author.' &nbsp; 推荐：'.$tieba_follower.' &nbsp; 最新章节：'.execute_scalar("select title from chapter where book_id = $book_id and id = (select max(id) from chapter where book_id = $book_id)").'</small></a>';
+				$html .= '<a href="book/'.$book_id.'" class="list-group-item"><strong>'.$book_title.'</strong> &nbsp; &nbsp; <small>作者：'.$author.' &nbsp; 推荐：'.$tieba_follower.' &nbsp; 最新章节：'.execute_scalar("select title from chapter where book_id = $book_id and id = (select max(id) from chapter where book_id = $book_id)").'</small></a>';
 			}
 			$html .= '</div>';
 			if ($exact_match_count == 1) {
-				header("Location: book.php?id=$exact_match_book_id", 302);
+				header("Location: book/$exact_match_book_id", 302);
 			}
 		}
 	}

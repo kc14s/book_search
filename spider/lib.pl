@@ -120,4 +120,9 @@ sub book_exist {
 	return execute_scalar("select count(*) from book where title = $book_title and author = $author", $db_conn) > 0;
 }
 
+sub next_page {
+	my ($spider_name, $current_page) = @_;
+	return $current_page <= $ENV{'daily_page'}->{$spider_name};
+}
+
 1;
