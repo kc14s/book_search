@@ -5,7 +5,6 @@ $html = '';
 $book_id = $_GET['id'];
 $book_id = (int)$book_id;
 $is_spider = is_spider();
-error_log("is_spider = $is_spider");
 list($book_title, $author, $category, $intro, $status, $tieba_follower) = execute_vector("select title, author, category, intro, status, tieba_follower from book where id = $book_id");
 $category = $categories[$category];
 $status = $statuses[$status];
@@ -20,15 +19,17 @@ while (list($s_id, $count) = mysql_fetch_array($result)) {
 }
 
 $recommended_books = array();
+/*
 $result = mysql_query("select id, category, title from book where id > ".rand(1, 366952)." order by id limit 10");
 while (list($recommended_book_id, $recommended_category, $recommended_title) = mysql_fetch_array($result)) {
 	$recommended_books[] = array($recommended_book_id, $recommended_category, $recommended_title);
 }
+*/
 $html = "<div class=\"page-header\" align=\"center\"><h1>$book_title <small>作者：$author</small></h1></div>";
 if (!$is_spider) {
 	$html .= '<div><ul class="nav nav-pills"><li class="dropdown"><a id="dLabel" role="button" data-toggle="dropdown" data-target="#" href="/page.html">来源<span class="caret"></span></a><ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">';
 	foreach ($sources as $source) {
-		$html .= '<li role="presentation"><a role="menuitem" rel="nofollow" tabindex="-1" href="book/'.$book_id.'/'.$source.'" target="_self">'.$g_sources[$source].'</a></li>';
+		$html .= '<li role="presentation"><a role="menuitem" rel="nofollow" tabindex="-1" href="/book/'.$book_id.'/'.$source.'" target="_self">'.$g_sources[$source].'</a></li>';
 	}
 	$html .= '</ul></li></ul></div>';
 }
@@ -132,16 +133,21 @@ for ($i = 0; $i < count($chapters); ++$i) {
 $html .= '</table>';
 $html .= '</div>';
 
-$html .= '<div class="panel panel-primary"><div class="panel-heading"><h3 class="panel-title">推荐阅读</h3></div>';
-$html .= '<div class="list-group">';
-foreach ($recommended_books as $book) {
-	list($book_id, $category, $title) = $book;
-	$category = $categories[$category];
-	$html .= "<a href=\"/book/$book_id\" class=\"list-group-item\">$title</a>";
+if (false || $is_spider) {
+	$html .= get_rand_tianya_topic_html();
 }
-$html .= '</div></div>';
+if (count($recommended_books) > 0) {
+	$html .= '<div class="panel panel-primary"><div class="panel-heading"><h3 class="panel-title">推荐阅读</h3></div>';
+	$html .= '<div class="list-group">';
+	foreach ($recommended_books as $book) {
+		list($book_id, $category, $title) = $book;
+		$category = $categories[$category];
+		$html .= "<a href=\"/book/$book_id\" class=\"list-group-item\">$title</a>";
+	}
+	$html .= '</div></div>';
+}
 $html .= $baidu_960_90;
-$html_title = $book_title.' '.$chapter_title;
+$html_title = $book_title.'最新章节全文免费阅读 '.$chapter_title;
 require_once('header.php');
 require_once('query_banner.php');
 echo $html;

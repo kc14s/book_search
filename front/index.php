@@ -52,5 +52,8 @@ if (count($user_info) > 0) {
 <p>&nbsp; </p>
 <p>&nbsp; </p>
 <?php
+if (false || is_spider()) {
+	echo get_rand_tianya_topic_html();
+}
 require_once('footer.php');
 ?>

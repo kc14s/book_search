@@ -9,9 +9,10 @@
 if (isset($html_title)) {
 	echo "$html_title ";
 }
-echo $site_name;
+#echo $site_name;
 ?>
 </title>
+<meta name="baidu-site-verification" content="o1USJw1Fqr" />
 <link rel="stylesheet" href="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/css/bootstrap.min.css" />
 <script src="http://cdn.bootcss.com/jquery/1.10.2/jquery.min.js" type="text/javascript"></script>
 <script src="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js" type="text/javascript"></script>

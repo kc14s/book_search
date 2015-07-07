@@ -99,12 +99,45 @@ function gen_user_id() {
 function is_spider() {
 	if (!isset($_SERVER['HTTP_USER_AGENT'])) return false;
 	$ua = $_SERVER['HTTP_USER_AGENT'];
-	if (strpos($ua, 'Baiduspider') === false && strpos($ua, 'Googlebot') === false && strpos($ua, 'baidu Transcoder') === false && strpos($ua, 'msnbot') === false && strpos($ua, 'Sogou') === false && strpos($ua, 'Sosospider') === false && strpos($ua, 'Yahoo!') === false && strpos($ua, 'Kmspider') === false && strpos($ua, 'Mediapartners-Google') === false && strpos($ua, 'YoudaoBot') === false && strpos($ua, '360Spider') === false && strpos($ua, 'bingbot') === false && strpos($ua, 'JikeSpider') === false && strpos($ua, 'EasouSpider') === false) {
+	if (strpos($ua, 'Baiduspider') === false && strpos($ua, 'Googlebot') === false && strpos($ua, 'baidu Transcoder') === false && strpos($ua, 'msnbot') === false && strpos($ua, 'Sogou') === false && strpos($ua, 'Sosospider') === false && strpos($ua, 'Yahoo!') === false && strpos($ua, 'Kmspider') === false && strpos($ua, 'Mediapartners-Google') === false && strpos($ua, 'YoudaoBot') === false && strpos($ua, '360Spider') === false && strpos($ua, 'bingbot') === false && strpos($ua, 'JikeSpider') === false && strpos($ua, 'EasouSpider') === false && strpos($ua, 'YisouSpider') === false) {
 		return false;
 	}
 	else {
 		return true;
 	}
+}
+
+function get_latest_tianya_topic_html() {
+	//list($tid_max, $tid_min) = execute_vector('select max(tid), min(tid) from tianya.thread');
+	//$result = mysql_query('select en_name, tid, title from tianya.thread where tid > '.rand($tid_min, $tid_max).' order by tid limit 30');
+	$result = mysql_query('select en_name, tid, title from tianya.thread order by tid desc limit 30');
+	while (list($en_name, $tid, $title) = mysql_fetch_array($result)) {
+		$topics[] = array($en_name, $tid, $title);
+	}
+	$html = '<div class="panel panel-default">';
+	$html .= '<div class="list-group">';
+	foreach ($topics as $topic) {
+		list($en_name, $tid, $title) = $topic;
+		$html .= "<a href=\"/thread/$en_name/$tid\" class=\"list-group-item\">$title</a>";
+	}
+	$html .= '</div></div>';
+	return $html;
+}
+
+function get_rand_tianya_topic_html() {
+	list($tid_max, $tid_min) = execute_vector('select max(tid), min(tid) from tianya.thread');
+	$result = mysql_query('select en_name, tid, title from tianya.thread where tid > '.rand($tid_min, $tid_max).' order by tid limit 30');
+	while (list($en_name, $tid, $title) = mysql_fetch_array($result)) {
+		$topics[] = array($en_name, $tid, $title);
+	}
+	$html = '<div class="panel panel-default">';
+	$html .= '<div class="list-group">';
+	foreach ($topics as $topic) {
+		list($en_name, $tid, $title) = $topic;
+		$html .= "<a href=\"/thread/$en_name/$tid\" class=\"list-group-item\">$title</a>";
+	}
+	$html .= '</div></div>';
+	return $html;
 }
 
 init();
